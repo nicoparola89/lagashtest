@@ -50,8 +50,11 @@ Metodo: GET
 URL: localhost:8080/api/v1/customer/random
 
 Listo, ya tenemos nuestro registro en la cache.
+
 Recordar que este va a estar activo por 5 minutos.
-Aclaración, en application.properties del proyecto podemos encontrar 2 claves.
+
+
+### Aclaración, en application.properties del proyecto podemos encontrar 2 claves.
 
 Tiempo de expiración de registro en cache, en unidad de segundos.
 
