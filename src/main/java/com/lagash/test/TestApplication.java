@@ -25,7 +25,6 @@ public class TestApplication {
 	@Bean
 	JedisConnectionFactory jedisConnectionFactory() {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration("redis", 6379);
-		//redisStandaloneConfiguration.setPassword(RedisPassword.of("password"));
 		return new JedisConnectionFactory(redisStandaloneConfiguration);
 	}
 
@@ -33,7 +32,6 @@ public class TestApplication {
 	public RedisTemplate redisTemplate() {
 		RedisTemplate template = new RedisTemplate<>();
 		template.setConnectionFactory(jedisConnectionFactory());
-		//template.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
 		return template;
 	}
 

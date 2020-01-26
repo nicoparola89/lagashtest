@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,10 +21,13 @@ import java.util.*;
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
-
+    @Value("${app.url.datasource}")
+    private  String URL;
     private CustomerRepositoryRedis customerRepositoryRedis;
-    private static final String URL = "http://interview.lagash.com.ar/api/customer/byScore/";
+
     private final CloseableHttpClient httpClient = HttpClients.createDefault();
+
+
 
     public CustomerServiceImpl(CustomerRepositoryRedis customerRepositoryRedis){
         this.customerRepositoryRedis = customerRepositoryRedis;
@@ -33,17 +37,11 @@ public class CustomerServiceImpl implements CustomerService {
 
         HttpGet request = new HttpGet(URL);
 
-        List prueba = customerRepositoryRedis.findAll();
-        System.out.println("CANTIDAD DE REGISTROS----->" + prueba.size());
 
         request.addHeader("x-api-key", "prueba");
         try (CloseableHttpResponse response = httpClient.execute(request)) {
 
-
-            System.out.println(response.getStatusLine().toString());
-
             HttpEntity entity = response.getEntity();
-
 
             if (entity != null) {
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -63,7 +61,7 @@ public class CustomerServiceImpl implements CustomerService {
             e.printStackTrace();
         }
 
-        return new Customer();
+        return null;
     }
 
     public Customer getCustomerNotDB(List<Customer> customerList){
@@ -73,12 +71,10 @@ public class CustomerServiceImpl implements CustomerService {
             Customer customerRandom = customerList.get(n);
             Customer customerDB = customerRepositoryRedis.findById(customerRandom.getId());
             if(customerDB != null){
-                //falta condicion de tiempo, mas de 5 minutos lo remuevo de la base y Lo retorno!
                 customerList.remove(n);
                 return getCustomerNotDB(customerList);
             }else{
                 customerRepositoryRedis.save(customerRandom);
-                //customerRepository.save(customerRandom);
                 return customerRandom;
             }
         }else{

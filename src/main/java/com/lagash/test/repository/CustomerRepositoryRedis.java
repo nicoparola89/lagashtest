@@ -2,6 +2,7 @@ package com.lagash.test.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lagash.test.domain.Customer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -18,6 +19,9 @@ public class CustomerRepositoryRedis {
 
     private RedisTemplate redisTemplate;
 
+    @Value("${app.timeexpire.cache}")
+    private Integer timeExpire;
+
     public CustomerRepositoryRedis(RedisTemplate redisTemplate){
         this.redisTemplate = redisTemplate;
         this.hashOperations = this.redisTemplate.opsForHash();
@@ -25,27 +29,18 @@ public class CustomerRepositoryRedis {
     }
 
     public void save(Customer user){
-       valueOperations.set(user.getId(),user,300,TimeUnit.SECONDS);
-       // hashOperations.put("USER", user.getId(), user);
-        // redisTemplate.expire(user.getId(),300, TimeUnit.SECONDS);
-    }
-    public List findAll(){
-
-        return hashOperations.values("USER");
+        System.out.println(timeExpire);
+       valueOperations.set(user.getId(),user,timeExpire,TimeUnit.SECONDS);
     }
 
     public Customer findById(String id){
-        ObjectMapper objectMapper = new ObjectMapper();
         return (Customer)valueOperations.get(id);
-        //return (Customer) hashOperations.get("USER", id);
     }
 
     public void update(Customer user){
         save(user);
     }
 
-    public void delete(String id){
-        hashOperations.delete("USER", id);
-    }
+
 
 }
